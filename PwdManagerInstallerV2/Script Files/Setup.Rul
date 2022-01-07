@@ -1,0 +1,86 @@
+//===========================================================================
+//
+//  File Name:    Setup.rul
+//
+//  Description:  Blank setup main script file
+//
+//  Comments:     Blank setup is an empty setup project. If you want to
+//				  create a new project via. step-by step instructions use the
+//				  Project Assistant.
+//
+//===========================================================================
+
+// Included header files ----------------------------------------------------
+#include "ifx.h"
+
+// Note: In order to have your InstallScript function executed as a custom
+// action by the Windows Installer, it must be prototyped as an 
+// entry-point function.
+
+// The keyword export identifies MyFunction() as an entry-point function.
+// The argument it accepts must be a handle to the Installer database.
+    
+/* export prototype MyFunction(HWND); */
+
+//---------------------------------------------------------------------------
+// OnEnd
+//
+// The OnEnd event is called at the end of the setup. This event is not
+// called if the setup is aborted.
+//---------------------------------------------------------------------------
+function OnEnd()
+	STRING szFeatureName;
+	STRING serviceTarget;
+	STRING szDocFile;
+begin
+	/*
+	//这个服务所需的文件只有在钩选了某feature时候才会被拷贝，并且也只有在用户钩选安装了此feature时候才会在安装结束时安装此服务，因此首要判断是否选择了此feature，然后寻找到该执行文件，并且进行安装
+	*/
+	szFeatureName="PwdManagerInstaller_Files";
+	serviceTarget=TARGETDIR^"pwdManager.exe";
+	if (FeatureIsItemSelected(MEDIA, szFeatureName)=1) then
+	if(FindFile(TARGETDIR, "pwdManager.exe", szDocFile)=0) then
+	if (LaunchApp (serviceTarget, "") < 0) then
+	MessageBox ("Unable to launch "+serviceTarget+".", SEVERE);
+	endif;
+	endif;
+	endif;
+end;
+
+//---------------------------------------------------------------------------
+// OnFirstUIAfter
+//
+// The OnFirstUIAfter event called by the framework after the file transfer
+// of the setup when the setup is running in first install mode. By default
+// this event displays UI that informs the end user that the setup has been
+// completed successfully.
+//---------------------------------------------------------------------------
+function OnFirstUIAfter()
+    STRING szTitle, szMsg1, szMsg2, szOpt1, szOpt2;
+    NUMBER bOpt1, bOpt2;
+    STRING szfilename,szFolder ,szmsg1,szmsg2;
+    NUMBER nresult;
+begin
+	Disable(STATUSEX);
+
+	bOpt1   = FALSE;
+    bOpt2   = FALSE;    
+
+    if ( BATCH_INSTALL ) then
+    	SdFinishReboot ( szTitle , szMsg1 , SYS_BOOTMACHINE , szMsg2 , 0 );
+    else
+	    SdFinish ( szTitle , szMsg1 , szMsg2 , szOpt1 , szOpt2 , bOpt1 , bOpt2 );
+	endif;
+	
+	//创建删除快捷方式
+	szfilename = UNINSTALL_STRING +" /UNINSTALL";
+	nresult = StrFind(szfilename,".exe");
+	if nresult >=0 then
+	StrSub(szmsg1,szfilename,0,nresult + 4);
+	StrSub(szmsg2,szfilename,nresult + 4,200);
+	LongPathToQuote(szmsg1, FALSE );
+	LongPathToQuote(szmsg2, FALSE );
+	szfilename = "\"" + szmsg1 + "\"" +szmsg2;
+	endif;
+	AddFolderIcon(FOLDER_PROGRAMS^"Test","Uninstall",szfilename,WINDIR,"",0,"",REPLACE);
+end;

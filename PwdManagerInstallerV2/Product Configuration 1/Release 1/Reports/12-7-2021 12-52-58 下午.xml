@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="C:\Program Files (x86)\InstallShield\2019\Support\0409\buildreport.xsl"?>
+<BuildReport ProductName="密码管理系统win版客户端" ProductVersion="0.0.1" Built="12-7-2021 12-52-58 下午" Config="Product Configuration 1" Media="Release 1" Uncompressed="0.00 MB">
+  <Features>
+    <Feature Title="##ID_STRING5##">PwdManagerInstaller_Files</Feature>
+  </Features>
+  <Components />
+  <Prerequisites />
+  <MergeModules />
+  <DynamicLinks />
+  <Files />
+</BuildReport>
